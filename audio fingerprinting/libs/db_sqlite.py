@@ -56,4 +56,33 @@ class SqliteDatabase(Database):
       "values": values
     }
 
- 
+  def findOne(self, table, params):
+    select = self.buildSelectQuery(table, params)
+    return self.executeOne(select['query'], select['values'])
+
+  def findAll(self, table, params):
+    select = self.buildSelectQuery(table, params)
+    return self.executeAll(select['query'], select['values'])
+
+  def insert(self, table, params):
+    keys = ', '.join(params.keys())
+    values = params.values()
+    print(keys)
+    query = "INSERT INTO songs (%s) VALUES (?, ?)" % (keys);
+
+    self.cur.execute(query, tuple(values))
+    self.conn.commit()
+
+    return self.cur.lastrowid
+
+  def insertMany(self, table, columns, values):
+    def grouper(iterable, n, fillvalue=None):
+      args = [iter(iterable)] * n
+      return (filter(None, values) for values
+          in zip_longest(fillvalue=fillvalue, *args))
+
+    for split_values in grouper(values, 1000):
+      query = "INSERT OR IGNORE INTO %s (%s) VALUES (?, ?, ?)" % (table, ", ".join(columns))
+      self.cur.executemany(query, split_values)
+
+    self.conn.commit()
