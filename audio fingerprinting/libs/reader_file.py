@@ -38,7 +38,7 @@ class FileReader(BaseReader):
       "file_hash": self.parse_file_hash()
     }
 
-  def parse_file_hash(self, blocksize=20):
+  def parse_file_hash(self, blocksize=2**20):
     s = sha1()
 
     with open(self.filename , "rb") as f:
