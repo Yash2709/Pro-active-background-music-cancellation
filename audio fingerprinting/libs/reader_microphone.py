@@ -54,3 +54,10 @@ class MicrophoneReader(BaseReader):
 
     return nums
 
+  def stop_recording(self):
+    self.stream.stop_stream()
+    self.stream.close()
+    self.stream = None
+    self.recorded = True
+
+  
