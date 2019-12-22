@@ -60,4 +60,22 @@ class MicrophoneReader(BaseReader):
     self.stream = None
     self.recorded = True
 
-  
+  def get_recorded_data(self):
+    return self.data
+
+  def save_recorded(self, output_filename):
+    wf = wave.open(output_filename, 'wb')
+    wf.setnchannels(self.channels)
+    wf.setsampwidth(self.audio.get_sample_size(self.default_format))
+    wf.setframerate(self.rate)
+
+    chunk_length = len(self.data[0]) / self.channels
+    result = numpy.reshape(self.data[0], (chunk_length, self.channels))
+    wf.writeframes(result)
+    wf.close()
+
+  def play(self):
+    pass
+
+  def get_recorded_time(self):
+    return len(self.data[0]) / self.rate
